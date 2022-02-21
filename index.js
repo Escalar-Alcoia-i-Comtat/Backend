@@ -5,7 +5,7 @@ require('dotenv').config()
 const express = require('express');
 const fs = require('fs');
 
-const {info, error, logRequest} = require('./logger');
+const {info, error, warn, logRequest} = require('./logger');
 
 const app = express();
 
@@ -30,6 +30,10 @@ if (process.env.MYSQL_USER == null) {
 if (process.env.MYSQL_PASS == null) {
     error("⚠️ MYSQL_PASS environment variable is not set.");
     mysqlError = true;
+}
+if (process.env.FILES_PATH == null) {
+    warn("❗ FILES_PATH environment variable is not set. Using default ./files");
+    process.env['FILES_PATH'] = './files';
 }
 
 if (mysqlError) {
@@ -178,7 +182,7 @@ runHashesRoutine().then(() => {
         /**
          * @type {string|null}
          */
-        const path = query.path;
+        let path = query.path;
         if (path == null)
             return res
                 .status(400)
@@ -192,6 +196,7 @@ runHashesRoutine().then(() => {
                     'error': 'invalid-path',
                     'message': 'The path specified is not valid. Accepted paths: images/**'
                 });
+        path = `${process.env.FILES_PATH}/${path}`;
         if (!fs.existsSync(path))
             return res
                 .status(406)
