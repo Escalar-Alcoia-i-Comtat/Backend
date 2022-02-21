@@ -19,6 +19,8 @@ module.exports = {
                     item['kidsApt'] = item.kidsApt === '1';
 
                 // Path adjustments
+                if (item.hasOwnProperty('showDescription'))
+                    item['showDescription'] = item.showDescription === '1';
                 if (item.hasOwnProperty('crackerRequired'))
                     item['crackerRequired'] = item.crackerRequired === '1';
                 if (item.hasOwnProperty('friendRequired'))
