@@ -1,0 +1,230 @@
+openapi: 3.1.0
+info:
+  title: eaic-backend
+  version: 1.0.2
+  summary: The API used by the Escalar Alcoia i Comtat products.
+  description: Used for accessing the server's data.
+  license:
+    name: CC BY-SA 4.0
+    url: 'http://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1'
+  contact:
+    name: Arnau Mora
+    email: arnyminer.z@gmail.com
+servers:
+  - url: 'http://localhost:3000'
+    description: Local Server
+  - url: 'http://arnyminerz.com:3000'
+    description: Production Server
+paths:
+  '/users/{userId}':
+    parameters:
+      - schema:
+          type: integer
+        name: userId
+        in: path
+        required: true
+        description: Id of an existing user.
+  /user: {}
+  '/api/info/blocking/{pathId}':
+    parameters:
+      - schema:
+          type: string
+        name: pathId
+        in: path
+        required: true
+    get:
+      summary: Get Path Blocking state
+      tags:
+        - path
+        - state
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      blocked:
+                        type: boolean
+                      type:
+                        type: string
+                        enum:
+                          - dry
+                          - build
+                          - bird
+                          - old
+                          - plants
+                          - rope_length
+                        readOnly: true
+              examples:
+                /api/info/blocking/invalid-path:
+                  value:
+                    result:
+                      blocked: false
+                /api/info/blocking/valid-path:
+                  value:
+                    result:
+                      blocked: true
+                      type: dry
+      operationId: get-api-info-blocking-pathId
+      description: |-
+        Fetches the blocking state of a path.
+        If blocked is false, type will always be null. Type can be
+  '/api/list/{type}':
+    parameters:
+      - schema:
+          type: string
+          enum:
+            - Areas
+            - Zones
+            - Sectors
+            - Paths
+        name: type
+        in: path
+        required: true
+        description: The type of element to fetch.
+    get:
+      summary: Get data list
+      tags:
+        - data
+        - path
+        - area
+        - zone
+        - sector
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    description: 'A dictionary with an undefined amount of children. Each element has as key the id of the element, and the contents of the select type.'
+                    properties:
+                      '{objectId} - Area':
+                        type: object
+                        properties:
+                          created:
+                            type: string
+                            format: date-time
+                            example: '2021-04-11T13:03:18.000Z'
+                            pattern: '\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\d.\d\d\dZ'
+                            maxLength: 24
+                            minLength: 24
+                          last_edit:
+                            type: string
+                            format: date-time
+                            example: '2021-04-11T13:03:18.000Z'
+                            pattern: '\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\d.\d\d\dZ'
+                            maxLength: 24
+                            minLength: 24
+                          displayName:
+                            type: string
+                          image:
+                            type: string
+                          kmz:
+                            type:
+                              - string
+                              - 'null'
+                          webURL:
+                            type:
+                              - string
+                              - 'null'
+                        required:
+                          - created
+                          - last_edit
+                          - displayName
+                          - image
+                          - kmz
+                          - webURL
+                      '{objectId} - Zone':
+                        type: object
+                        properties:
+                          created:
+                            type: string
+                          last_edit:
+                            type: string
+                            pattern: '\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\d.\d\d\dZ'
+                            minLength: 24
+                            maxLength: 24
+                            format: date-time
+                            example: '2021-04-11T13:03:18.000Z'
+                          displayName:
+                            type: string
+                            minLength: 24
+                            maxLength: 24
+                            pattern: '\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\d.\d\d\dZ'
+                            format: date-time
+                            example: '2021-04-11T13:03:18.000Z'
+                          image:
+                            type: string
+                          kmz:
+                            type:
+                              - string
+                              - 'null'
+                          latitude:
+                            type: number
+                          longitude:
+                            type: number
+                          webURL:
+                            type:
+                              - 'null'
+                              - string
+                          area:
+                            type: string
+                            description: The id of the parent Area
+                        required:
+                          - created
+                          - last_edit
+                          - displayName
+                          - image
+                          - kmz
+                          - latitude
+                          - longitude
+                          - webURL
+                          - area
+              examples: {}
+      operationId: get-api-list-type
+      description: Used for fetching all the available data from the server.
+      parameters: []
+components:
+  schemas:
+    Area-data:
+      title: Area-data
+      type: object
+      x-tags:
+        - data
+        - area
+      properties:
+        created:
+          type: string
+          pattern: '\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\d.\d\d\dZ'
+          format: date-time
+          example: '2021-04-11T13:03:18.000Z'
+          minLength: 24
+          maxLength: 24
+        last_edit:
+          type: string
+          minLength: 24
+          maxLength: 24
+          pattern: '\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\d.\d\d\dZ'
+          format: date-time
+          example: '2021-04-11T13:03:18.000Z'
+        displayName:
+          type: string
+        image:
+          type: string
+        kmz:
+          type:
+            - string
+            - 'null'
+        webURL:
+          type:
+            - string
+            - 'null'
