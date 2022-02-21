@@ -39,7 +39,11 @@ module.exports = {
     runHashesRoutine: async () => {
         info("📂 Running images MD5 checks...");
 
-        const hashes = md5FileCheck('images');
+        const imagesDirPath = `${process.env.FILES_PATH}/images`;
+        if (!fs.existsSync(imagesDirPath))
+            return info("   images dir does not exist.");
+
+        const hashes = md5FileCheck(imagesDirPath);
         info("ℹ️ Got", hashes.length, "hashes.");
 
         info("🛒 Fetching server hashes...");
