@@ -11,7 +11,7 @@ const pool = mariadb.createPool({
 module.exports = {
     /**
      * Does the same as [queryData] but makes multiple requests before closing the connection to the database.
-     * @param {{table:string,fields:string[]}[]} queries All the queries to make
+     * @param {{table:string,fields:string[]|null,where:string[][]|null}[]} queries All the queries to make
      * @return {Promise<any[]>} A list of the results of the requests.
      */
     queryMultiple: async (queries) => {
@@ -23,9 +23,24 @@ module.exports = {
                 const request = queries[i];
                 const table = request.table;
                 const fields = request.fields;
-                const query = `SELECT ${fields != null && fields.length > 0 ? fields.join(',') : '*'} FROM escalaralcoiaicomtat.${table}`;
+                const whereParams = request.where;
+
+                let wheres = [];
+                if (whereParams != null)
+                    for (let k in whereParams)
+                        if (whereParams.hasOwnProperty(k)) {
+                            const pair = whereParams[k];
+                            wheres.push(`${pair[0]}='${pair[1]}'`);
+                        }
+
+                const fieldsToSelect = fields != null && fields.length > 0 ? fields.join(',') : '*';
+                const whereParameter = wheres.length > 0 ? wheres.join(',') : '1';
+
+                const query = `SELECT ${fieldsToSelect} FROM escalaralcoiaicomtat.${table} WHERE ${whereParameter}`;
                 log("📝 SQL query: ", query);
-                results.push(await conn.query(query));
+                const queryResult = await conn.query(query);
+                delete queryResult['meta'];
+                results.push(queryResult);
             }
         } catch (err) {
             throw err;
