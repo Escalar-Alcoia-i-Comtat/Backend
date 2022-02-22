@@ -52,6 +52,7 @@ module.exports = {
         } finally {
             if (conn) await conn.end();
         }
+        delete res['meta'];
         return res;
     },
     /**
@@ -79,6 +80,7 @@ module.exports = {
         } finally {
             if (conn) await conn.end();
         }
+        delete res['meta'];
         return res;
     },
     /**
@@ -105,6 +107,7 @@ module.exports = {
         } finally {
             if (conn) await conn.end();
         }
+        delete res['meta'];
         return res;
     },
     /**
@@ -127,6 +130,7 @@ module.exports = {
         } finally {
             if (conn) await conn.end();
         }
+        delete res['meta'];
         return res;
     },
     /**
@@ -157,6 +161,7 @@ module.exports = {
         } finally {
             if (conn) await conn.end();
         }
+        delete res['meta'];
         return res;
     }
 };
