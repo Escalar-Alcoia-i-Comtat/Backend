@@ -261,7 +261,12 @@ runHashesRoutine().then(() => {
                 .type("application/json")
                 .send({'error': 'path-not-file', 'message': 'The path must point to a file'});
         const imageFile = fs.readFileSync(path);
-        res.status(200).type('image/jpeg').send(imageFile);
+        const mime = path.endsWith('jpg') || path.endsWith('jpeg') ? 'image/jpeg' :
+            path.endsWith('jpg') ? 'image/png' :
+                path.endsWith('kmz') ? 'application/vnd.google-earth.kmz' :
+                    path.endsWith('kml') ? 'application/vnd.google-earth.kmz+xml' : 'text/plain';
+
+        res.status(200).type(mime).send(imageFile);
     });
 
     app.get('/', (req, res) => {
