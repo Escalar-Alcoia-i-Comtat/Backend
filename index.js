@@ -248,14 +248,6 @@ runHashesRoutine().then(() => {
                 .status(400)
                 .type("application/json")
                 .send({'error': 'bad-request', 'message': 'Missing "path" parameter.'});
-        if (!path.startsWith('images'))
-            return res
-                .status(400)
-                .type("application/json")
-                .send({
-                    'error': 'invalid-path',
-                    'message': 'The path specified is not valid. Accepted paths: images/**'
-                });
         path = `${process.env.FILES_PATH}/${path}`;
         if (!fs.existsSync(path))
             return res
