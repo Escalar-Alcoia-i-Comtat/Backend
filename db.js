@@ -11,7 +11,7 @@ const pool = mariadb.createPool({
 module.exports = {
     /**
      * Does the same as [queryData] but makes multiple requests before closing the connection to the database.
-     * @param {{table:string,fields:string[]|null,where:string[][]|null}[]} queries All the queries to make
+     * @param {{table:string,fields:string[]|null,where:string[][]|null,limit:number|null}[]} queries All the queries to make
      * @return {Promise<any[]>} A list of the results of the requests.
      */
     queryMultiple: async (queries) => {
@@ -24,19 +24,24 @@ module.exports = {
                 const table = request.table;
                 const fields = request.fields;
                 const whereParams = request.where;
+                const limit = request.limit;
 
                 let wheres = [];
                 if (whereParams != null)
                     for (let k in whereParams)
                         if (whereParams.hasOwnProperty(k)) {
                             const pair = whereParams[k];
-                            wheres.push(`${pair[0]}='${pair[1]}'`);
+                            const key = pair[0];
+                            const operation = pair[1];
+                            const value = pair[2];
+                            wheres.push(`${key}${operation}${value}`);
                         }
 
                 const fieldsToSelect = fields != null && fields.length > 0 ? fields.join(',') : '*';
                 const whereParameter = wheres.length > 0 ? wheres.join(',') : '1';
+                const limitParameter = limit != null ? ` LIMIT ${limit}` : '';
 
-                const query = `SELECT ${fieldsToSelect} FROM escalaralcoiaicomtat.${table} WHERE ${whereParameter}`;
+                const query = `SELECT ${fieldsToSelect} FROM escalaralcoiaicomtat.${table} WHERE ${whereParameter}${limitParameter}`;
                 log("📝 SQL query: ", query);
                 const queryResult = await conn.query(query);
                 delete queryResult['meta'];
