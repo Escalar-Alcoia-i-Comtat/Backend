@@ -299,7 +299,7 @@ runHashesRoutine().then(() => {
                     }),
                 });
         }
-        res.send({result: {updateAvailable: updatableObjects.length <= 0, fields: updatableObjects}});
+        res.send({result: {updateAvailable: updatableObjects.length > 0, fields: updatableObjects}});
     });
 
     app.get('/', (req, res) => {
