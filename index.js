@@ -72,9 +72,15 @@ runHashesRoutine().then(() => {
             if (endDate != null) {
                 const now = new Date();
                 if (now.getTime() < endDate.getTime())
-                    return res.status(200).type('application/json').send({'result': {blocked: true, type}});
+                    return res
+                        .status(200)
+                        .type('application/json')
+                        .send({'result': {blocked: true, type, endDate}});
             } else
-                return res.status(200).type('application/json').send({'result': {blocked: true, type}});
+                return res
+                    .status(200)
+                    .type('application/json')
+                    .send({'result': {blocked: true, type}});
         }
         res.status(200).type('application/json').send({'result': {blocked: false}});
     });
