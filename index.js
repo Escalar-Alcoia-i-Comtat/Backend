@@ -72,9 +72,15 @@ runHashesRoutine().then(() => {
             if (endDate != null) {
                 const now = new Date();
                 if (now.getTime() < endDate.getTime())
-                    return res.status(200).type('application/json').send({'result': {blocked: true, type}});
+                    return res
+                        .status(200)
+                        .type('application/json')
+                        .send({'result': {blocked: true, type, endDate}});
             } else
-                return res.status(200).type('application/json').send({'result': {blocked: true, type}});
+                return res
+                    .status(200)
+                    .type('application/json')
+                    .send({'result': {blocked: true, type}});
         }
         res.status(200).type('application/json').send({'result': {blocked: false}});
     });
@@ -91,13 +97,14 @@ runHashesRoutine().then(() => {
             result = {result: processDataClassQuery(query)};
         } else if (type === '*') {
             /**
-             * @type {{fields: string[], table: string}[]}
+             * @type {{table:string,fields:string[]|null,where:string[][]|null,limit:number|null}[]}
              */
             const queries = types.map((type) => {
                 return {
                     table: type,
                     where: null,
                     fields: null,
+                    limit: null,
                 };
             });
             const results = await queryMultiple(queries);
@@ -148,13 +155,14 @@ runHashesRoutine().then(() => {
         let result = {"error": "bad-request"};
         if (['Areas', 'Zones', 'Sectors', 'Paths'].includes(type)) {
             /**
-             * @type {{table:string,fields:string[]|null,where:string[][]|null}[]}
+             * @type {{table:string,fields:string[]|null,where:string[][]|null,limit:number|null}[]}
              */
             let queries = [];
             queries.push({
                 table: type,
-                where: [['objectId', objectId]],
+                where: [['objectId', '=', `'${objectId}'`]],
                 fields: null,
+                limit: null,
             });
 
             // Check if loadChildren is true, and if the type selected may contain children.
@@ -183,7 +191,7 @@ runHashesRoutine().then(() => {
             }
 
             code = 200;
-            result = {result: children.length > 0 ? { parent, children } : parent};
+            result = {result: children.length > 0 ? {parent, children} : parent};
         }
         res.status(code).type("application/json").send(result);
     });
@@ -267,6 +275,37 @@ runHashesRoutine().then(() => {
                     path.endsWith('kml') ? 'application/vnd.google-earth.kmz+xml' : 'text/plain';
 
         res.status(200).type(mime).send(imageFile);
+    });
+
+    app.get('/api/updater', async (req, res) => {
+        const query = req.query;
+        /**
+         * @type {string|null}
+         */
+        const millis = query['millis'];
+        if (millis == null)
+            return res.status(400).send({'error': 'bad-request', 'message': 'Missing "millis" parameter.'});
+        const tables = ['Areas', 'Zones', 'Sectors', 'Paths'];
+        const typesQuery = await queryMultiple(tables.map((table) => {
+            return {
+                table,
+                fields: ['objectId'],
+                where: [['UNIX_TIMESTAMP(last_edit)*1000', '>=', `'${millis}'`]],
+                limit: null
+            }
+        }));
+        let updatableObjects = [];
+        for (let q in typesQuery) {
+            const tableResults = typesQuery[q];
+            if (tableResults.length > 0)
+                updatableObjects.push({
+                    table: tables[q],
+                    ids: tableResults.map((result) => {
+                        return result['objectId'].toString();
+                    }),
+                });
+        }
+        res.send({result: {updateAvailable: updatableObjects.length > 0, fields: updatableObjects}});
     });
 
     app.get('/', (req, res) => {
