@@ -27,4 +27,4 @@ jobs:
         with:
           push: true
           tags: arnyminerz/escalaralcoiaicomtat_backend:latest
-          platforms: linux/arm64,linux/arm/v7
+          platforms: linux/arm64,linux/arm/v7,linux/amd64
