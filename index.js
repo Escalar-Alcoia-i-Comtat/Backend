@@ -13,6 +13,7 @@ const app = express();
 const allowedOrigins = [
     'localhost:5000', // The Firebase emulator
     'images.escalaralcoiaicomtat.org', // The image generator server
+    'arnyminerz.com', // The reverse proxy
 ];
 
 info("🔧 Adding CORS header configuration...");
