@@ -20,6 +20,7 @@
   "author": "Arnau Mora (arnyminer.z@gmail.com)",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.3",
     "mariadb": "^2.5.5"
   },
