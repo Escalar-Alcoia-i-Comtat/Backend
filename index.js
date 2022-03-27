@@ -19,17 +19,26 @@ const allowedOrigins = [
     'arnyminerz.com', // The reverse proxy
 ];
 const corsOptions = {
+    /**
+     * @callback corsCallback
+     * @param {*} error The error message. null if no error should be shown.
+     * @param {boolean|string|RegExp|Array} origin The result origin.
+     */
+    /**
+     * Gets called whenever a CORS request needs to be parsed.
+     * @param {string|null} or The origin name. Contains protocol prefix.
+     * @param {corsCallback} callback Should be called with the result of the operation.
+     * @return {*}
+     */
     origin: (or, callback) => {
+        // Allow requests with no origin. This includes the Android app.
+        if (!origin)
+            return callback(null, true);
+
         // Remove the protocol prefix.
         const origin = or
             .replace('https://', '')
             .replace('http://', '');
-
-        info("Checking CORS policy for", origin);
-
-        // Allow requests with no origin. This includes the Android app.
-        if (!origin)
-            return callback(null, true);
 
         // Do not allow requests from sources not included in allowedOrigins
         if (allowedOrigins.indexOf(origin) === -1)
