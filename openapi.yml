@@ -13,7 +13,7 @@ info:
 servers:
   - url: 'http://localhost:3000'
     description: Local Server
-  - url: 'http://arnyminerz.com:3000'
+  - url: 'http://server.escalaralcoiaicomtat.com:3000'
     description: Production Server
 paths:
   '/users/{userId}':
