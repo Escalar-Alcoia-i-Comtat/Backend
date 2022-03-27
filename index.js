@@ -6,6 +6,9 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 
+const http = require('http');
+const https = require('https');
+
 const {info, error, warn, logRequest} = require('./logger');
 
 const app = express();
@@ -49,7 +52,14 @@ info("🔧 Running environment checks...");
  */
 const http_port = process.env.HTTP_PORT || 3000;
 
+/**
+ * The port which the application listens for https requests.
+ * @type {number}
+ */
+const https_port = process.env.HTTP_PORT || 3001;
+
 let mysqlError = false;
+let sslError = false;
 
 if (process.env.MYSQL_HOST == null) {
     error("⚠️ MYSQL_HOST environment variable is not set.");
@@ -68,12 +78,37 @@ if (process.env.FILES_PATH == null) {
     process.env['FILES_PATH'] = './files';
 }
 
+if (process.env.ACME_NAME == null) {
+    error("⚠️ ACME_NAME environment variable is not set.");
+    sslError = true;
+}
+if (process.env.ACME_VALUE == null) {
+    error("⚠️ ACME_VALUE environment variable is not set.");
+    sslError = true;
+}
+if (process.env.SSL_PATH_PRIV == null) {
+    error("⚠️ SSL_PATH_PRIV environment variable is not set.");
+    sslError = true;
+}
+if (process.env.SSL_PATH_CERT == null) {
+    error("⚠️ SSL_PATH_CERT environment variable is not set.");
+    sslError = true;
+}
+if (process.env.SSL_PATH_CA == null) {
+    error("⚠️ SSL_PATH_CA environment variable is not set.");
+    sslError = true;
+}
+
 if (mysqlError) {
     error("❌ Some MySQL environment variables were not set.");
     error("   MySQL is required for the correct working of the system.");
     error("   Boot is not possible.");
     process.exit(1);
     return;
+}
+if (sslError) {
+    error("❌ Some SSL and/or ACME validation variables were not set.");
+    error("   HTTPS will not work.");
 }
 
 const {queryData, queryWhere, queryMultiple} = require('./db');
@@ -344,7 +379,30 @@ runHashesRoutine().then(() => {
         res.status(200).type("text/plain").send("hello world!");
     });
 
-    app.listen(http_port, () => {
+    if (!sslError) {
+        const acmeName = process.env.ACME_NAME;
+        const acmeContents = process.env.ACME_VALUE;
+        info(`🔃 Adding ACME validation endpoint (${acmeName})...`);
+        app.get(`/.well-known/acme-challenge/${acmeName}`, (req, res) => {
+            res.status(200).send(acmeContents);
+        });
+
+        info("🔃 Creating https server...");
+        const httpsServer = https.createServer({
+            key: fs.readFileSync(process.env.SSL_PATH_PRIV, 'utf8'),
+            cert: fs.readFileSync(process.env.SSL_PATH_CERT, 'utf8'),
+            ca: fs.readFileSync(process.env.SSL_PATH_CA, 'utf8'),
+        }, app);
+
+        httpsServer.listen(https_port, () => {
+            info(`👂 Listening for requests on https://localhost:${https_port}`);
+        });
+    }
+
+    info("🔃 Creating http server...");
+    const httpServer = http.createServer(app);
+
+    httpServer.listen(http_port, () => {
         info(`👂 Listening for requests on http://localhost:${http_port}`);
     });
 });
