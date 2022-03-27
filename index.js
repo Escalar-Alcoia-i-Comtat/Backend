@@ -93,15 +93,15 @@ if (process.env.ACME_VALUE == null) {
 }
 
 if (!fs.existsSync(sslPathPriv)) {
-    error("⚠️ SSL_PATH_PRIV environment variable is not set.");
+    error("⚠️ Private SSL key file doesn't exist.");
     sslError = true;
 }
 if (!fs.existsSync(sslPathCert)) {
-    error("⚠️ SSL_PATH_CERT environment variable is not set.");
+    error("⚠️ SSL certificate doesn't exist.");
     sslError = true;
 }
 if (!fs.existsSync(sslPathCa)) {
-    error("⚠️ SSL_PATH_CA environment variable is not set.");
+    error("⚠️ SSL chain file doesn't exist.");
     sslError = true;
 }
 
@@ -116,7 +116,7 @@ if (acmeError) {
     warn("❌ Some ACME validation variables were not set.");
 }
 if (sslError) {
-    warn("❌ Some SSL variables were not set.");
+    warn("❌ Some SSL files were not found.");
     warn("   HTTPS will not work.");
 }
 
