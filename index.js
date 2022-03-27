@@ -16,7 +16,12 @@ const allowedOrigins = [
     'arnyminerz.com', // The reverse proxy
 ];
 const corsOptions = {
-    origin: (origin, callback) => {
+    origin: (or, callback) => {
+        // Remove the protocol prefix.
+        const origin = or
+            .replace('https://', '')
+            .replace('http://', '');
+
         info("Checking CORS policy for", origin);
 
         // Allow requests with no origin. This includes the Android app.
