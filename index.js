@@ -32,7 +32,7 @@ const corsOptions = {
      */
     origin: (or, callback) => {
         // Allow requests with no origin. This includes the Android app.
-        if (!origin)
+        if (!or)
             return callback(null, true);
 
         // Remove the protocol prefix.
