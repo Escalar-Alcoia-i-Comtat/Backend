@@ -15,10 +15,10 @@ const allowedOrigins = [
     'images.escalaralcoiaicomtat.org', // The image generator server
     'arnyminerz.com', // The reverse proxy
 ];
-
-info("🔧 Adding CORS header configuration...");
-app.use(cors({
+const corsOptions = {
     origin: (origin, callback) => {
+        info("Checking CORS policy for", origin);
+
         // Allow requests with no origin. This includes the Android app.
         if (!origin)
             return callback(null, true);
@@ -33,7 +33,8 @@ app.use(cors({
         // If allowed origins includes origin, allow request.
         return callback(null, true);
     },
-}));
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
 info("🔧 Running environment checks...");
 
@@ -77,7 +78,7 @@ const {runHashesRoutine} = require('./hashes');
 runHashesRoutine().then(() => {
     info("🕳️ Adding GET listeners...");
 
-    app.get('/api/info/blocking/:pathId', async (req, res) => {
+    app.get('/api/info/blocking/:pathId', cors(corsOptions), async (req, res) => {
         const params = req.params;
         /**
          * @type {string}
@@ -111,7 +112,7 @@ runHashesRoutine().then(() => {
         res.status(200).type('application/json').send({'result': {blocked: false}});
     });
 
-    app.get('/api/list/:type', async (req, res) => {
+    app.get('/api/list/:type', cors(corsOptions), async (req, res) => {
         const params = req.params;
         const type = params.type;
         let code = 400;
@@ -147,7 +148,7 @@ runHashesRoutine().then(() => {
         res.status(code).type("application/json").send(result);
     });
 
-    app.get('/api/list/:type/:parentId', async (req, res) => {
+    app.get('/api/list/:type/:parentId', cors(corsOptions), async (req, res) => {
         logRequest(req);
         const params = req.params;
         const type = params.type;
@@ -162,7 +163,7 @@ runHashesRoutine().then(() => {
         res.status(code).type("application/json").send(result);
     });
 
-    app.get('/api/data/:type/:objectId', async (req, res) => {
+    app.get('/api/data/:type/:objectId', cors(corsOptions), async (req, res) => {
         logRequest(req);
         const params = req.params;
         /**
@@ -222,7 +223,7 @@ runHashesRoutine().then(() => {
         res.status(code).type("application/json").send(result);
     });
 
-    app.get('/api/files/checksum', async (req, res) => {
+    app.get('/api/files/checksum', cors(corsOptions), async (req, res) => {
         const query = req.query;
         /**
          * @type {string|null}
@@ -271,7 +272,7 @@ runHashesRoutine().then(() => {
         res.status(200).type('application/json').send({'result': {'expired_hashes': expiredHashes}});
     });
 
-    app.get('/api/files/download', (req, res) => {
+    app.get('/api/files/download', cors(corsOptions), (req, res) => {
         const query = req.query;
         /**
          * @type {string|null}
@@ -303,7 +304,7 @@ runHashesRoutine().then(() => {
         res.status(200).type(mime).send(imageFile);
     });
 
-    app.get('/api/updater', async (req, res) => {
+    app.get('/api/updater', cors(corsOptions), async (req, res) => {
         const query = req.query;
         /**
          * @type {string|null}
@@ -339,6 +340,6 @@ runHashesRoutine().then(() => {
     });
 
     app.listen(http_port, () => {
-        info(`Listening for requests on http://localhost:${http_port}`);
+        info(`👂 Listening for requests on http://localhost:${http_port}`);
     });
 });
