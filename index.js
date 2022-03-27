@@ -3,11 +3,36 @@
 require('dotenv').config()
 
 const express = require('express');
+const cors = require('cors');
 const fs = require('fs');
 
 const {info, error, warn, logRequest} = require('./logger');
 
 const app = express();
+
+const allowedOrigins = [
+    'localhost:5000', // The Firebase emulator
+    'images.escalaralcoiaicomtat.org', // The image generator server
+];
+
+info("🔧 Adding CORS header configuration...");
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin. This includes the Android app.
+        if (!origin)
+            return callback(null, true);
+
+        // Do not allow requests from sources not included in allowedOrigins
+        if (allowedOrigins.indexOf(origin) === -1)
+            return callback(
+                new Error('The CORS policy of this site does not allow requests from the specified domain'),
+                false
+            );
+
+        // If allowed origins includes origin, allow request.
+        return callback(null, true);
+    },
+}));
 
 info("🔧 Running environment checks...");
 
