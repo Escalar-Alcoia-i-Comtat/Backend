@@ -58,9 +58,15 @@ const http_port = process.env.HTTP_PORT || 3000;
  */
 const https_port = process.env.HTTP_PORT || 3001;
 
-const sslPathPriv = "/usr/src/escalaralcoiaicomtat/letsencrypt/privkey.pem";
-const sslPathCert = "/usr/src/escalaralcoiaicomtat/letsencrypt/cert.pem";
-const sslPathCa = "/usr/src/escalaralcoiaicomtat/letsencrypt/chain.pem";
+const sslPathRoot = '/usr/src/escalaralcoiaicomtat/letsencrypt';
+
+const sslPrivFileName = process.env.SSL_PRIV_FILENAME || 'privkey.pem';
+const sslCertFileName = process.env.SSL_CERT_FILENAME || 'cert.pem';
+const sslChainFileName = process.env.SSL_CHAIN_FILENAME || 'chain.pem';
+
+const sslPathPriv = `${sslPathRoot}/${sslPrivFileName}`;
+const sslPathCert = `${sslPathRoot}/${sslCertFileName}`;
+const sslPathCa = `${sslPathRoot}/${sslChainFileName}`;
 
 let mysqlError = false;
 let acmeError = false;
