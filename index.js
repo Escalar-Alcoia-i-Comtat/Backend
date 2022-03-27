@@ -58,6 +58,10 @@ const http_port = process.env.HTTP_PORT || 3000;
  */
 const https_port = process.env.HTTP_PORT || 3001;
 
+const sslPathPriv = "/usr/src/escalaralcoiaicomtat/letsencrypt/privkey.pem";
+const sslPathCert = "/usr/src/escalaralcoiaicomtat/letsencrypt/cert.pem";
+const sslPathCa = "/usr/src/escalaralcoiaicomtat/letsencrypt/chain.pem";
+
 let mysqlError = false;
 let acmeError = false;
 let sslError = false;
@@ -88,15 +92,15 @@ if (process.env.ACME_VALUE == null) {
     acmeError = true;
 }
 
-if (process.env.SSL_PATH_PRIV == null) {
+if (!fs.existsSync(sslPathPriv)) {
     error("⚠️ SSL_PATH_PRIV environment variable is not set.");
     sslError = true;
 }
-if (process.env.SSL_PATH_CERT == null) {
+if (!fs.existsSync(sslPathCert)) {
     error("⚠️ SSL_PATH_CERT environment variable is not set.");
     sslError = true;
 }
-if (process.env.SSL_PATH_CA == null) {
+if (!fs.existsSync(sslPathCa)) {
     error("⚠️ SSL_PATH_CA environment variable is not set.");
     sslError = true;
 }
@@ -396,9 +400,9 @@ runHashesRoutine().then(() => {
     if (!sslError) {
         info("🔃 Creating https server...");
         const httpsServer = https.createServer({
-            key: fs.readFileSync(process.env.SSL_PATH_PRIV, 'utf8'),
-            cert: fs.readFileSync(process.env.SSL_PATH_CERT, 'utf8'),
-            ca: fs.readFileSync(process.env.SSL_PATH_CA, 'utf8'),
+            key: fs.readFileSync(sslPathPriv, 'utf8'),
+            cert: fs.readFileSync(sslPathCert, 'utf8'),
+            ca: fs.readFileSync(sslPathCa, 'utf8'),
         }, app);
 
         httpsServer.listen(https_port, () => {
