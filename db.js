@@ -92,7 +92,11 @@ module.exports = {
             }
         try {
             conn = await pool.getConnection();
-            const query = `SELECT ${fields.length > 0 ? fields.join(',') : '*'} FROM escalaralcoiaicomtat.${table} WHERE ${wheres.join(',')}`;
+
+            const selector = fields.length > 0 ? fields.join(',') : '*';
+            const whereParam = wheres.length > 0 ? "WHERE " + wheres.join(',') : "";
+
+            const query = `SELECT ${selector} FROM escalaralcoiaicomtat.${table} ${whereParam}`;
             log("📝 SQL query: " + query);
             res = await conn.query(query);
         } catch (err) {
