@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: eaic-backend
-  version: 1.0.2
+  version: 1.0.4
   summary: The API used by the Escalar Alcoia i Comtat products.
   description: Used for accessing the server's data.
   license:
