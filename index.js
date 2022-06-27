@@ -65,7 +65,7 @@ const http_port = process.env.HTTP_PORT || 3000;
  * The port which the application listens for https requests.
  * @type {number}
  */
-const https_port = process.env.HTTP_PORT || 3001;
+const https_port = process.env.HTTPS_PORT || 3001;
 
 const sslPathRoot = process.env.SSL_PATH || '/usr/src/escalaralcoiaicomtat/letsencrypt';
 
