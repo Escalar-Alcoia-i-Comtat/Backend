@@ -8,6 +8,7 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    name: 🐋 Docker CI
     steps:
       -
         name: Set up QEMU
@@ -26,5 +27,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: arnyminerz/escalaralcoiaicomtat_backend:latest
+          tags: arnyminerz/escalaralcoiaicomtat_backend:development
           platforms: linux/arm64,linux/arm/v7,linux/amd64
