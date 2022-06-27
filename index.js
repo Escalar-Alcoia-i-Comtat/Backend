@@ -67,7 +67,7 @@ const http_port = process.env.HTTP_PORT || 3000;
  */
 const https_port = process.env.HTTP_PORT || 3001;
 
-const sslPathRoot = '/usr/src/escalaralcoiaicomtat/letsencrypt';
+const sslPathRoot = process.env.SSL_PATH || '/usr/src/escalaralcoiaicomtat/letsencrypt';
 
 const sslPrivFileName = process.env.SSL_PRIV_FILENAME || 'privkey.pem';
 const sslCertFileName = process.env.SSL_CERT_FILENAME || 'cert.pem';
