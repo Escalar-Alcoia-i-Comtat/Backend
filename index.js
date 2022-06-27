@@ -1,6 +1,10 @@
+// noinspection HttpUrlsUsage
+
 'use strict';
 
 require('dotenv').config()
+
+const version = require('root-require')('package.json').version;
 
 const express = require('express');
 const cors = require('cors');
@@ -66,6 +70,8 @@ const http_port = process.env.HTTP_PORT || 3000;
  * @type {number}
  */
 const https_port = process.env.HTTPS_PORT || 3001;
+
+const isProduction = process.env.IS_PRODUCTION || false;
 
 const sslPathRoot = process.env.SSL_PATH || '/usr/src/escalaralcoiaicomtat/letsencrypt';
 
@@ -433,6 +439,10 @@ runHashesRoutine().then(() => {
                 });
         }
         res.send({result: {updateAvailable: updatableObjects.length > 0, fields: updatableObjects}});
+    });
+
+    app.get('/api/info', cors(corsOptions), async (req, res) => {
+        res.send({ version, isProduction });
     });
 
     app.get('/', (req, res) => {
