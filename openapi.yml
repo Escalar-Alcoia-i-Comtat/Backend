@@ -193,6 +193,31 @@ paths:
       operationId: get-api-list-type
       description: Used for fetching all the available data from the server.
       parameters: []
+  /api/info:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    description: The version of the server. References the one in the manual.
+                    pattern: '\d{1,}\.\d{1,}\.\d{1,}'
+                    minLength: 5
+                  isProduction:
+                    type: boolean
+                    description: 'Tells whether or not the server is considered as production, or if it''s a development server.'
+                required:
+                  - version
+                  - isProduction
+      operationId: get-api-info
+      description: Gets information about the server.
 components:
   schemas:
     Area-data:
