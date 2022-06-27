@@ -73,6 +73,10 @@
   description: Indicates that the issue is regarding some translation.
   color: 59F4BD
 
+- name: docker
+  description: Updates related to the docker daemon.
+  color: 307BD1
+
 - name: major
   description: Major changes. Used for release bump
   color: 16970B

@@ -5,6 +5,10 @@
     ],
     "documentation": [
       "*.md"
+    ],
+    "docker": [
+      "Dockerfile",
+      ".dockerignore"
     ]
   }
 }
