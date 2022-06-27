@@ -1,3 +1,5 @@
+// noinspection HttpUrlsUsage
+
 'use strict';
 
 require('dotenv').config()
