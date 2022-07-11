@@ -23,19 +23,19 @@ const processRow = (row, deleteObjectId = true) => {
 
     // Path adjustments
     if (row.hasOwnProperty('showDescription'))
-        row['showDescription'] = row.showDescription === '1';
+        row['showDescription'] = row.showDescription === 1;
     if (row.hasOwnProperty('crackerRequired'))
-        row['crackerRequired'] = row.crackerRequired === '1';
+        row['crackerRequired'] = row.crackerRequired === 1;
     if (row.hasOwnProperty('friendRequired'))
-        row['friendRequired'] = row.friendRequired === '1';
+        row['friendRequired'] = row.friendRequired === 1;
     if (row.hasOwnProperty('lanyardRequired'))
-        row['lanyardRequired'] = row.lanyardRequired === '1';
+        row['lanyardRequired'] = row.lanyardRequired === 1;
     if (row.hasOwnProperty('nailRequired'))
-        row['nailRequired'] = row.nailRequired === '1';
+        row['nailRequired'] = row.nailRequired === 1;
     if (row.hasOwnProperty('pitonRequired'))
-        row['pitonRequired'] = row.pitonRequired === '1';
+        row['pitonRequired'] = row.pitonRequired === 1;
     if (row.hasOwnProperty('stripsRequired'))
-        row['stripsRequired'] = row.stripsRequired === '1';
+        row['stripsRequired'] = row.stripsRequired === 1;
 
     return row;
 }
