@@ -1,5 +1,9 @@
 FROM node:17
 
+# Remove cached files
+RUN rm -rf /usr/src/escalaralcoiaicomtat
+RUN mkdir -p /usr/src/escalaralcoiaicomtat
+
 # Create app directory
 WORKDIR /usr/src/escalaralcoiaicomtat
 
