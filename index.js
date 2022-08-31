@@ -17,46 +17,6 @@ const {info, error, warn, logRequest} = require('./logger');
 
 const app = express();
 
-const allowedOrigins = [
-    'localhost:5000', // The Firebase emulator
-    'images.escalaralcoiaicomtat.org', // The image generator server
-    'arnyminerz.com', // The reverse proxy
-];
-const corsOptions = {
-    /**
-     * @callback corsCallback
-     * @param {*} error The error message. null if no error should be shown.
-     * @param {boolean|string|RegExp|Array} origin The result origin.
-     */
-    /**
-     * Gets called whenever a CORS request needs to be parsed.
-     * @param {string|null} or The origin name. Contains protocol prefix.
-     * @param {corsCallback} callback Should be called with the result of the operation.
-     * @return {*}
-     */
-    origin: (or, callback) => {
-        // Allow requests with no origin. This includes the Android app.
-        if (!or)
-            return callback(null, true);
-
-        // Remove the protocol prefix.
-        const origin = or
-            .replace('https://', '')
-            .replace('http://', '');
-
-        // Do not allow requests from sources not included in allowedOrigins
-        if (allowedOrigins.indexOf(origin) === -1)
-            return callback(
-                new Error('The CORS policy of this site does not allow requests from the specified domain'),
-                false
-            );
-
-        // If allowed origins includes origin, allow request.
-        return callback(null, true);
-    },
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-
 info("🔧 Running environment checks...");
 
 /**
@@ -78,6 +38,8 @@ const sslPathRoot = process.env.SSL_PATH || '/usr/src/escalaralcoiaicomtat/letse
 const sslPrivFileName = process.env.SSL_PRIV_FILENAME || 'privkey.pem';
 const sslCertFileName = process.env.SSL_CERT_FILENAME || 'cert.pem';
 const sslChainFileName = process.env.SSL_CHAIN_FILENAME || 'chain.pem';
+
+const corsHosts = process.env.CORS_HOSTS;
 
 const sslPathPriv = `${sslPathRoot}/${sslPrivFileName}`;
 const sslPathCert = `${sslPathRoot}/${sslCertFileName}`;
@@ -140,6 +102,56 @@ if (sslError) {
     warn("❌ Some SSL files were not found.");
     warn("   HTTPS will not work.");
 }
+
+info('🔐 Creating CORS options...');
+const allowedOrigins = [
+    // 'localhost:5000', // The Firebase emulator
+    'images.escalaralcoiaicomtat.org', // The image generator server
+    'arnyminerz.com', // The reverse proxy
+];
+if (corsHosts != null) {
+    const hosts = corsHosts.split(',');
+    info('   Adding', hosts.length, 'hosts to the CORS policy:');
+    for (const h in hosts)
+        if (hosts.hasOwnProperty(h)) {
+            const host = hosts[h];
+            allowedOrigins.push(host);
+        }
+}
+const corsOptions = {
+    /**
+     * @callback corsCallback
+     * @param {*} error The error message. null if no error should be shown.
+     * @param {boolean|string|RegExp|Array} origin The result origin.
+     */
+    /**
+     * Gets called whenever a CORS request needs to be parsed.
+     * @param {string|null} or The origin name. Contains protocol prefix.
+     * @param {corsCallback} callback Should be called with the result of the operation.
+     * @return {*}
+     */
+    origin: (or, callback) => {
+        // Allow requests with no origin. This includes the Android app.
+        if (!or)
+            return callback(null, true);
+
+        // Remove the protocol prefix.
+        const origin = or
+            .replace('https://', '')
+            .replace('http://', '');
+
+        // Do not allow requests from sources not included in allowedOrigins
+        if (allowedOrigins.indexOf(origin) === -1)
+            return callback(
+                new Error('The CORS policy of this site does not allow requests from the specified domain'),
+                false
+            );
+
+        // If allowed origins includes origin, allow request.
+        return callback(null, true);
+    },
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
 const {queryData, queryWhere, queryMultiple} = require('./db');
 const {processDataClassQuery, processRow} = require('./data_processing');
