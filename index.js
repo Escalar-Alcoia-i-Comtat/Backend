@@ -156,7 +156,7 @@ const corsOptions = {
 const {queryData, queryWhere, queryMultiple} = require('./db');
 const {processDataClassQuery, processRow} = require('./data_processing');
 const {runHashesRoutine} = require('./hashes');
-const blocking = require('./endpoints/blocking');
+const blocking = require('./endpoints/blocking.cjs');
 
 runHashesRoutine().then(() => {
     info("🕳️ Adding GET listeners...");
