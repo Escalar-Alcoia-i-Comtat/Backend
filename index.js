@@ -156,6 +156,7 @@ const corsOptions = {
 const {queryData, queryWhere, queryMultiple} = require('./db');
 const {processDataClassQuery, processRow} = require('./data_processing');
 const {runHashesRoutine} = require('./hashes');
+const blocking = require('./endpoints/blocking');
 
 runHashesRoutine().then(() => {
     info("🕳️ Adding GET listeners...");
@@ -229,6 +230,8 @@ runHashesRoutine().then(() => {
             .type('application/json')
             .send({result});
     });
+
+    app.get('/api/v2/info/blocking/:pathId', cors(corsOptions), blocking.endpoint);
 
     app.get('/api/list/:type', cors(corsOptions), async (req, res) => {
         const params = req.params;
