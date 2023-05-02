@@ -32,7 +32,12 @@ module.exports = {
             // If only one item, result is that item
             blockages[0] :
             // If multiple items, create a map with all the items and the respective path ids
-            blockages;
+            blockages.reduce((map, obj) => {
+                const path = obj.path;
+                delete obj.path;
+                map[path] = obj;
+                return map;
+            }, {});
 
         // If the result was single item, remove the path property
         if (result.hasOwnProperty('path'))
