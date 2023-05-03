@@ -24,19 +24,16 @@ export default async (req, res) => {
      */
     let blockages = processBlockingData(query);
 
-    /**
-     * @type {{path: string, blocked: boolean, type: string, endDate: (Date|null)}|Object<string, {path: string, blocked: boolean, type: string, endDate: (Date|null)}[]>}
-     */
-    let result = blockages.length === 1 ?
-        // If only one item, result is that item
-        blockages[0] :
-        // If multiple items, create a map with all the items and the respective path ids
-        blockages.reduce((map, obj) => {
-            const path = obj.path;
-            delete obj.path;
-            map[path] = obj;
-            return map;
-        }, {});
+    /** @type {Object} */
+    let result = {};
+
+    for (const blockage of blockages) {
+        const id = blockage.path;
+        const paths = result.hasOwnProperty(id) ? result[id] : [];
+        delete blockage.path;
+        paths.push(blockage);
+        result[id] = paths;
+    }
 
     // If the result was single item, remove the path property
     if (result.hasOwnProperty('path'))
