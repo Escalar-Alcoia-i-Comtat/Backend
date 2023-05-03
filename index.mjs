@@ -169,7 +169,7 @@ runHashesRoutine().then(async () => {
 
     app.get('/api/info/blocking/:pathId', cors(corsOptions), oldBlockingEndpoint);
     app.get('/v1/info/blocking/:pathId', cors(corsOptions), oldBlockingEndpoint);
-    app.get('/v2/info/blocking/:pathId', cors(corsOptions), blockingEndpoint);
+    app.get('/v2/blocking/:pathId', cors(corsOptions), blockingEndpoint);
 
     app.get('/api/list/:type', cors(corsOptions), listBaseEndpoint);
     app.get('/v1/list/:type', cors(corsOptions), listBaseEndpoint);
