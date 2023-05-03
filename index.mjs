@@ -16,8 +16,6 @@ import https from 'https';
 
 import {info, error, warn} from './logger.mjs';
 
-const app = express();
-
 info("🔧 Running environment checks...");
 
 /**
@@ -165,32 +163,34 @@ import downloadEndpoint from './endpoints/file/download.mjs';
 import updaterEndpoint from './endpoints/updater.mjs';
 
 runHashesRoutine().then(async () => {
+    const app = express();
+
     info("🕳️ Adding GET listeners...");
 
     app.get('/api/info/blocking/:pathId', cors(corsOptions), oldBlockingEndpoint);
-    app.get('/api/v1/info/blocking/:pathId', cors(corsOptions), oldBlockingEndpoint);
-    app.get('/api/v2/info/blocking/:pathId', cors(corsOptions), blockingEndpoint);
+    app.get('/v1/info/blocking/:pathId', cors(corsOptions), oldBlockingEndpoint);
+    app.get('/v2/info/blocking/:pathId', cors(corsOptions), blockingEndpoint);
 
     app.get('/api/list/:type', cors(corsOptions), listBaseEndpoint);
-    app.get('/api/v1/list/:type', cors(corsOptions), listBaseEndpoint);
+    app.get('/v1/list/:type', cors(corsOptions), listBaseEndpoint);
 
     app.get('/api/list/:type/:parentId', cors(corsOptions), listChildEndpoint);
-    app.get('/api/v1/list/:type/:parentId', cors(corsOptions), listChildEndpoint);
+    app.get('/v1/list/:type/:parentId', cors(corsOptions), listChildEndpoint);
 
     app.get('/api/data/:type/:objectId', cors(corsOptions), dataEndpoint);
-    app.get('/api/v1/data/:type/:objectId', cors(corsOptions), dataEndpoint);
+    app.get('/v1/data/:type/:objectId', cors(corsOptions), dataEndpoint);
 
     app.get('/api/files/checksum', cors(corsOptions), checksumEndpoint);
-    app.get('/api/v1/files/checksum', cors(corsOptions), checksumEndpoint);
+    app.get('/v1/files/checksum', cors(corsOptions), checksumEndpoint);
 
     app.get('/api/files/download', cors(corsOptions), downloadEndpoint);
-    app.get('/api/v1/files/download', cors(corsOptions), downloadEndpoint);
+    app.get('/v1/files/download', cors(corsOptions), downloadEndpoint);
 
     app.get('/api/updater', cors(corsOptions), updaterEndpoint);
-    app.get('/api/v1/updater', cors(corsOptions), updaterEndpoint);
+    app.get('/v1/updater', cors(corsOptions), updaterEndpoint);
 
     app.get('/api/info', cors(corsOptions), (req, res) =>res.send({version: packageJson.version, isProduction}));
-    app.get('/api/v1/info', cors(corsOptions), (req, res) =>res.send({version: packageJson.version, isProduction}));
+    app.get('/v1/info', cors(corsOptions), (req, res) =>res.send({version: packageJson.version, isProduction}));
 
     if (!acmeError) {
         const acmeName = process.env.ACME_NAME;
