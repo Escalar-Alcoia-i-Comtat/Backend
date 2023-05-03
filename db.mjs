@@ -1,5 +1,5 @@
 import mariadb from 'mariadb';
-import {log} from './logger.mjs';
+import {error, log} from './logger.mjs';
 
 const pool = mariadb.createPool({
     host: process.env.MYSQL_HOST,
@@ -199,3 +199,22 @@ export const insert = async (table, data) => {
     delete res['meta'];
     return res;
 };
+
+/**
+ * Pings the database server to check if it's working or not.
+ * @return {Promise<boolean>}
+ */
+export const ping = async () => {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        // Perform a generic SQL request to check that database responds
+        await conn.query("SELECT * FROM information_schema.INNODB_SYS_TABLES;");
+    } catch (err) {
+        error(err);
+        return false;
+    } finally {
+        if (conn) await conn.end();
+    }
+    return true;
+}
