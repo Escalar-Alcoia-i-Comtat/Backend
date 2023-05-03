@@ -152,6 +152,7 @@ const corsOptions = {
 };
 
 import {runHashesRoutine} from './hashes.mjs';
+import {ping} from "./db.mjs";
 
 import blockingEndpoint from './endpoints/blocking.mjs';
 import oldBlockingEndpoint from './endpoints/blocking.old.mjs';
@@ -161,6 +162,14 @@ import dataEndpoint from './endpoints/data.mjs';
 import checksumEndpoint from './endpoints/file/checksum.mjs';
 import downloadEndpoint from './endpoints/file/download.mjs';
 import updaterEndpoint from './endpoints/updater.mjs';
+
+info('🔧 Pinging database...');
+const dbAvailable = await ping();
+if (!dbAvailable) {
+    error("❌ The database server could not be reached, please, check configuration.");
+    error(`   Server: ${process.env.MYSQL_USER}@${process.env.MYSQL_HOST}:${process.env.MYSQL_PORT}`);
+    process.exit(1)
+}
 
 runHashesRoutine().then(async () => {
     const app = express();
