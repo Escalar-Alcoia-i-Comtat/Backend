@@ -1,6 +1,6 @@
-const {info, log} = require("./logger");
+const {info, log} = require("./logger.mjs");
 const fs = require("fs");
-const {addData} = require("./db");
+const {addData} = require("./db.mjs");
 
 const {core} = require('express');
 
