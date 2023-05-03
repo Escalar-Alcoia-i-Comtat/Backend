@@ -1,4 +1,4 @@
-const {processBlockingData} = require("../logic/blocking.cjs");
+const {processBlockingData} = require("../logic/blocking.mjs");
 
 // Mock Date.now to return a fixed date (2023-05-03 12:59:59 AM GMT)
 Date.now = jest.fn(() => 1683075599000)

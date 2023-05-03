@@ -4,7 +4,7 @@
  * @param {boolean} deleteObjectId
  * @returns
  */
-const processRow = (row, deleteObjectId = true) => {
+export const processRow = (row, deleteObjectId = true) => {
     if (deleteObjectId)
         delete row["objectId"];
     else
@@ -38,18 +38,15 @@ const processRow = (row, deleteObjectId = true) => {
         row['stripsRequired'] = row.stripsRequired === 1;
 
     return row;
-}
+};
 
-module.exports = {
-    processRow,
-    processDataClassQuery: (query) => {
-        let items = {};
-        for (let i in query)
-            if (query.hasOwnProperty(i) && query[i].objectId != null) {
-                const row = query[i];
-                const objectId = row.objectId.toString();
-                items[objectId] = processRow(row);
-            }
-        return items;
-    }
+export const processDataClassQuery = (query) => {
+    let items = {};
+    for (let i in query)
+        if (query.hasOwnProperty(i) && query[i].objectId != null) {
+            const row = query[i];
+            const objectId = row.objectId.toString();
+            items[objectId] = processRow(row);
+        }
+    return items;
 };
